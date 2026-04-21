@@ -98,6 +98,22 @@
         "info": ""
     },
     {
+        "id": "a5499f60132d0339",
+        "type": "tab",
+        "label": "Tomar Foto con MQTT",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "d11188680478243f",
+        "type": "tab",
+        "label": "BOT Telegram",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "47e7d3c1bb3dc1b3",
         "type": "group",
         "z": "80716a0201809318",
@@ -494,6 +510,33 @@
         "useselfsignedcertificate": false,
         "sslterminated": false,
         "verboselogging": true
+    },
+    {
+        "id": "9ff3d0469784da19",
+        "type": "telegram bot",
+        "botname": "soa_2026",
+        "usernames": "",
+        "chatids": "",
+        "baseapiurl": "",
+        "testenvironment": false,
+        "updatemode": "polling",
+        "pollinterval": 300,
+        "usesocks": false,
+        "sockshost": "",
+        "socksprotocol": "socks5",
+        "socksport": 6667,
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "botpath": "",
+        "localbothost": "0.0.0.0",
+        "localbotport": 8443,
+        "publicbotport": 8443,
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
     },
     {
         "id": "6134b29a20fe48e4",
@@ -5702,6 +5745,583 @@
         "wires": [
             [
                 "3eb55276.c9a8ce"
+            ]
+        ]
+    },
+    {
+        "id": "28f244213e7964be",
+        "type": "mqtt in",
+        "z": "a5499f60132d0339",
+        "name": "",
+        "topic": "command",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "d0acc29a59a2026a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 260,
+        "y": 240,
+        "wires": [
+            [
+                "174f5b7c74607695"
+            ]
+        ]
+    },
+    {
+        "id": "0d81a1d041085799",
+        "type": "mqtt out",
+        "z": "a5499f60132d0339",
+        "name": "",
+        "topic": "fototomada",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "d0acc29a59a2026a",
+        "x": 1130,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "174f5b7c74607695",
+        "type": "switch",
+        "z": "a5499f60132d0339",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "tomarfoto",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 240,
+        "wires": [
+            [
+                "5e967cc0971af554"
+            ]
+        ]
+    },
+    {
+        "id": "5e967cc0971af554",
+        "type": "function",
+        "z": "a5499f60132d0339",
+        "name": "function 2",
+        "func": "const num= Math.floor(Math.random()*1000000000);\nmsg.filename=`/tmp/${num}.jpg`;\nmsg.payload=`-y -f v4l2 -ss 1 -i /dev/video0 -frames:v 1 -update 1 ${msg.filename}`;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 240,
+        "wires": [
+            [
+                "b7feacb02f691021"
+            ]
+        ]
+    },
+    {
+        "id": "b7feacb02f691021",
+        "type": "exec",
+        "z": "a5499f60132d0339",
+        "command": "ffmpeg",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "10",
+        "winHide": false,
+        "oldrc": false,
+        "name": "",
+        "x": 730,
+        "y": 240,
+        "wires": [
+            [
+                "a5405305c990d6cd"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "a5405305c990d6cd",
+        "type": "file in",
+        "z": "a5499f60132d0339",
+        "name": "",
+        "filename": "filename",
+        "filenameType": "msg",
+        "format": "",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 930,
+        "y": 220,
+        "wires": [
+            [
+                "0d81a1d041085799"
+            ]
+        ]
+    },
+    {
+        "id": "b35fc7c6e831b2fb",
+        "type": "debug",
+        "z": "a5499f60132d0339",
+        "name": "debug 19",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 420,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "883f5d897fda8029",
+        "type": "mqtt in",
+        "z": "a5499f60132d0339",
+        "name": "",
+        "topic": "fototomada",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "d0acc29a59a2026a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 240,
+        "y": 460,
+        "wires": [
+            [
+                "b35fc7c6e831b2fb"
+            ]
+        ]
+    },
+    {
+        "id": "f1f55e4072f2f2f6",
+        "type": "inject",
+        "z": "d11188680478243f",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "tomarfoto",
+        "payloadType": "str",
+        "x": 180,
+        "y": 460,
+        "wires": [
+            [
+                "e9f61255dcece5af"
+            ]
+        ]
+    },
+    {
+        "id": "30b024b2ccb8c1d1",
+        "type": "mqtt out",
+        "z": "d11188680478243f",
+        "name": "",
+        "topic": "command",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "d0acc29a59a2026a",
+        "x": 500,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "94cfa1266a52f507",
+        "type": "mqtt in",
+        "z": "d11188680478243f",
+        "name": "",
+        "topic": "fototomada",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "d0acc29a59a2026a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 320,
+        "wires": [
+            [
+                "fa7d14bb8c2768a5",
+                "aa6012daa6a98e12"
+            ]
+        ]
+    },
+    {
+        "id": "fa7d14bb8c2768a5",
+        "type": "image viewer",
+        "z": "d11188680478243f",
+        "name": "",
+        "width": "300",
+        "data": "payload",
+        "dataType": "msg",
+        "active": false,
+        "x": 310,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f1d1350342b04d83",
+        "type": "telegram command",
+        "z": "d11188680478243f",
+        "name": "",
+        "command": "/tomarfoto",
+        "description": "",
+        "registercommand": false,
+        "language": "",
+        "scope": "default",
+        "bot": "9ff3d0469784da19",
+        "strict": false,
+        "hasresponse": true,
+        "useregex": false,
+        "removeregexcommand": false,
+        "outputs": 2,
+        "x": 180,
+        "y": 100,
+        "wires": [
+            [
+                "d27aaf1e9ca069a2",
+                "468e22ccd460b91e",
+                "5339578467da4c4f"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "d27aaf1e9ca069a2",
+        "type": "debug",
+        "z": "d11188680478243f",
+        "name": "debug 20",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 420,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "d4b19de1c326a5e3",
+        "type": "telegram command",
+        "z": "d11188680478243f",
+        "name": "",
+        "command": "/ayuda",
+        "description": "",
+        "registercommand": false,
+        "language": "",
+        "scope": "default",
+        "bot": "9ff3d0469784da19",
+        "strict": false,
+        "hasresponse": true,
+        "useregex": false,
+        "removeregexcommand": false,
+        "outputs": 2,
+        "x": 150,
+        "y": 240,
+        "wires": [
+            [
+                "09e7d7180a51123b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "904fe8c259e55714",
+        "type": "telegram sender",
+        "z": "d11188680478243f",
+        "name": "",
+        "bot": "9ff3d0469784da19",
+        "haserroroutput": true,
+        "outputs": 2,
+        "x": 990,
+        "y": 160,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "468e22ccd460b91e",
+        "type": "change",
+        "z": "d11188680478243f",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "chatId",
+                "pt": "flow",
+                "to": "payload.chatId",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 325,
+        "y": 60,
+        "wires": [
+            [
+                "11e342bb758c1245"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "0698754e61bf623b",
+        "type": "link in",
+        "z": "d11188680478243f",
+        "name": "Telegram Sender",
+        "links": [
+            "5293f50ab1fc7efd",
+            "c4e4ae2987c70f5c",
+            "4c1c277cd49ed119"
+        ],
+        "x": 855,
+        "y": 160,
+        "wires": [
+            [
+                "904fe8c259e55714"
+            ]
+        ]
+    },
+    {
+        "id": "5293f50ab1fc7efd",
+        "type": "link out",
+        "z": "d11188680478243f",
+        "name": "link out 8",
+        "mode": "link",
+        "links": [
+            "0698754e61bf623b"
+        ],
+        "x": 585,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "11e342bb758c1245",
+        "type": "function",
+        "z": "d11188680478243f",
+        "name": "Aguarde...",
+        "func": "msg.payload={\n    content:\"Aguarde...\",\n    chatId:flow.get(\"chatId\"),\n    type:\"message\"\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 60,
+        "wires": [
+            [
+                "5293f50ab1fc7efd"
+            ]
+        ]
+    },
+    {
+        "id": "09e7d7180a51123b",
+        "type": "function",
+        "z": "d11188680478243f",
+        "name": "Ayuda",
+        "func": "msg.payload={\n    content:\"Tome una foto con /tomarfoto\",\n    chatId:flow.get(\"chatId\"),\n    type:\"message\"\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 260,
+        "wires": [
+            [
+                "c4e4ae2987c70f5c"
+            ]
+        ]
+    },
+    {
+        "id": "c4e4ae2987c70f5c",
+        "type": "link out",
+        "z": "d11188680478243f",
+        "name": "link out 9",
+        "mode": "link",
+        "links": [
+            "0698754e61bf623b"
+        ],
+        "x": 475,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "336f36372e2cfb5b",
+        "type": "link in",
+        "z": "d11188680478243f",
+        "name": "Tomar foto real",
+        "links": [
+            "5339578467da4c4f"
+        ],
+        "x": 285,
+        "y": 420,
+        "wires": [
+            [
+                "e9f61255dcece5af"
+            ]
+        ]
+    },
+    {
+        "id": "5339578467da4c4f",
+        "type": "link out",
+        "z": "d11188680478243f",
+        "name": "link out 10",
+        "mode": "link",
+        "links": [
+            "336f36372e2cfb5b"
+        ],
+        "x": 335,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "e9f61255dcece5af",
+        "type": "change",
+        "z": "d11188680478243f",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "tomarfoto",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 315,
+        "y": 460,
+        "wires": [
+            [
+                "30b024b2ccb8c1d1"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "aa6012daa6a98e12",
+        "type": "file",
+        "z": "d11188680478243f",
+        "name": "",
+        "filename": "/tmp/imagen.jpg",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 320,
+        "y": 320,
+        "wires": [
+            [
+                "529b03012a932099"
+            ]
+        ]
+    },
+    {
+        "id": "529b03012a932099",
+        "type": "delay",
+        "z": "d11188680478243f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 455,
+        "y": 320,
+        "wires": [
+            [
+                "c03af7ae987673db"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "4c1c277cd49ed119",
+        "type": "link out",
+        "z": "d11188680478243f",
+        "name": "link out 11",
+        "mode": "link",
+        "links": [
+            "0698754e61bf623b"
+        ],
+        "x": 675,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "c03af7ae987673db",
+        "type": "function",
+        "z": "d11188680478243f",
+        "name": "Aguarde...",
+        "func": "msg.payload={\n    content:\"/tmp/imagen.jpg\",\n    chatId:flow.get(\"chatId\"),\n    type:\"photo\"\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 320,
+        "wires": [
+            [
+                "4c1c277cd49ed119"
             ]
         ]
     }
