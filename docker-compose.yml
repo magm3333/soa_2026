@@ -1,0 +1,86 @@
+services:
+  nginx_soa2026:
+    container_name: nginx_soa2026
+    image: nginx:1.23.3
+    links:
+      - "nodered_soa2026"
+      - "adminer_soa2026"
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+
+  adminer_soa2026:
+    container_name: adminer_soa2026
+    image: adminer:latest
+    expose:
+      - 8080
+
+  mysql_soa2026:
+    container_name: mysql_soa2026
+    image: mysql:8.0.45
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    expose:
+      - 3306
+
+  mongo_soa2026:
+    container_name: mongo_soa2026
+    image: mongo:8
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+    expose:
+      - 27017
+    healthcheck:
+      test: ["CMD", "mongosh", "--username", "admin", "--password", "admin123", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo_express_soa2026:
+    container_name: mongo_express_soa2026
+    image: mongo-express:latest
+    depends_on:
+      mongo_soa2026:
+        condition: service_healthy
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=admin123
+      - ME_CONFIG_MONGODB_SERVER=mongo_soa2026
+      #- ME_CONFIG_BASICAUTH_USERNAME=admin
+      #- ME_CONFIG_BASICAUTH_PASSWORD=admin123
+      - ME_CONFIG_BASICAUTH=false
+    ports:
+      - "8081:8081"
+
+  nodered_soa2026:
+    container_name: nodered_soa2026
+    image: nodered/node-red:4.1.7
+    privileged: true
+    # El usuario por defecto de la imagen es node-red, pero 
+    # necesitamos entrar como root para instalar paquetes.
+    user: root 
+    entrypoint: >
+      sh -c "
+      apk add --no-cache ffmpeg && 
+      chmod 666 /dev/video0 && 
+      su -s /bin/sh node-red -c 'exec /usr/src/node-red/node_modules/.bin/node-red --userDir /data'
+      "
+    environment:
+      - TZ=America/Argentina/Buenos_Aires
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./node-red-data:/data
+    devices:
+      - /dev/video0:/dev/video0
+#ffmpeg -y -f v4l2 -ss 1 -i /dev/video0 -frames:v 1 -update 1 /data/test2.jpg
+#apk add ffmpeg
+  mqtt_soa2026:
+    container_name: mqtt_soa2026
+    image: eclipse-mosquitto:2.1.2-alpine
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+    expose:
+        - 1883

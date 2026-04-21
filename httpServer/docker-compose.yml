@@ -1,0 +1,11 @@
+services:
+  http-server:
+    image: magm/http-server:v1
+    container_name: http-server
+    volumes:
+      - ./:/www
+    environment:
+      MAGM_PORT: "${MGM_PORT}"
+    ports:
+      - "${MGM_PORT}:${MGM_PORT}"
+    restart: unless-stopped
