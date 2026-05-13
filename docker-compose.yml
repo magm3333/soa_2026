@@ -58,8 +58,6 @@ services:
     container_name: nodered_soa2026
     image: nodered/node-red:4.1.7
     privileged: true
-    # El usuario por defecto de la imagen es node-red, pero 
-    # necesitamos entrar como root para instalar paquetes.
     user: root 
     entrypoint: >
       sh -c "
@@ -75,6 +73,17 @@ services:
       - ./node-red-data:/data
     devices:
       - /dev/video0:/dev/video0
+
+
+
+
+
+
+
+
+
+
+
 #ffmpeg -y -f v4l2 -ss 1 -i /dev/video0 -frames:v 1 -update 1 /data/test2.jpg
 #apk add ffmpeg
   mqtt_soa2026:

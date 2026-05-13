@@ -1,0 +1,13 @@
+services:
+  label-studio:
+    image: heartexlabs/label-studio
+    container_name: label-studio_soa_2026
+    user: "1000"
+    environment:
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ./lbstudio:/label-studio/data:rw
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
